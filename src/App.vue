@@ -12,7 +12,7 @@ const monedas = ref([
   const criptomonedas = ref([])
 
   onMounted(()=>{
-    const url = 'https://min-api.cryptocompare.com/data/top/mktcapfull?limit=10&tsym=USD'
+    const url = 'https://min-api.cryptocompare.com/data/top/mktcapfull?limit=20&tsym=USD'
     fetch(url)
      .then(response => response.json())
      .then(({Data}) => criptomonedas.value = Data)
@@ -33,6 +33,17 @@ const monedas = ref([
               <option v-for="moneda in monedas" :value="moneda.codigo">{{moneda.texto}}</option>
             </select>
           </div>
+
+          <div class="campo">
+            <label for="crypto">Criptomonedas:</label>
+            <select name="" id="crypto">
+              <option value="">--Selecciona--</option>
+              <option v-for="crypto in criptomonedas" :value="crypto.CoinInfo.Name">{{crypto.CoinInfo.FullName}}</option>
+            </select>
+          </div>
+
+          <input type="submit" value="Cotizar">
+
         </form>
       </div>
     </h1>
