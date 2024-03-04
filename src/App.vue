@@ -1,6 +1,9 @@
 <script setup>
+import Alerta from './Alerta.vue';
 
 import { ref ,onMounted ,reactive} from 'vue';
+
+const error=ref('')
 
 const monedas = ref([
       { codigo: 'USD', texto: 'Dolar de Estados Unidos'},
@@ -21,6 +24,19 @@ const monedas = ref([
      .then(response => response.json())
      .then(({Data}) => criptomonedas.value = Data)
   })
+
+  const cotizarCripto = ()=>{
+    //VAlidar que cotizar esta lleno
+    if(Object.values(cotizar).includes('')){
+      error.value='Todos los campos son obligatorios'
+      return
+    }
+
+    error.value=''
+
+    console.log('mmm')
+    
+  }
 </script>
 
 <template>
@@ -29,7 +45,8 @@ const monedas = ref([
       Cotizador de<span>Criptomonedas</span>
 
       <div class="contenido">
-        <form class="formulario" action="">
+        <Alerta v-if="error">{{error}}</Alerta>
+        <form class="formulario" action="" @submit.prevent="cotizarCripto">
           <div class="campo">
             <label for="moneda">Moneda:</label>
             <select name="" id="moneda" v-model="cotizar.moneda">
