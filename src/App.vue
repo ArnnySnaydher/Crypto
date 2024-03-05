@@ -18,6 +18,8 @@ const cotizar = reactive({
   criptomoneda: ''
 })
 
+const cotizacion = ref({})
+
 onMounted(() => {
   const url = 'https://min-api.cryptocompare.com/data/top/mktcapfull?limit=20&tsym=USD'
   fetch(url)
@@ -39,9 +41,12 @@ const cotizarCripto = () => {
 
 const obtenerCotizacion = async () => {
   try {
-    const {moneda,criptomoneda} =cotizar
-      const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${criptomoneda}&tsyms=${moneda}`
-      console.log(url)
+    const { moneda, criptomoneda } = cotizar
+    const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${criptomoneda}&tsyms=${moneda}`
+
+    const respuesta = await fetch(url)
+    const data = await respuesta.json()
+    cotizacion.value = data.DISPLAY[criptomoneda][moneda]
   } catch (error) {
 
   }
@@ -53,33 +58,48 @@ const obtenerCotizacion = async () => {
   <div class="contenedor">
     <h1 class="titulo">
       Cotizador de<span>Criptomonedas</span>
-
-      <div class="contenido">
-        <Alerta v-if="error">{{ error }}</Alerta>
-        <form class="formulario" action="" @submit.prevent="cotizarCripto">
-          <div class="campo">
-            <label for="moneda">Moneda:</label>
-            <select name="" id="moneda" v-model="cotizar.moneda">
-              <option value="">--Selecciona--</option>
-              <option v-for="moneda in monedas" :value="moneda.codigo">{{ moneda.texto }}</option>
-            </select>
-          </div>
-
-          <div class="campo">
-            <label for="crypto">Criptomonedas:</label>
-            <select name="" id="crypto" v-model="cotizar.criptomoneda">
-              <option value="">--Selecciona--</option>
-              <option v-for="crypto in criptomonedas" :value="crypto.CoinInfo.Name">{{ crypto.CoinInfo.FullName }}
-              </option>
-            </select>
-          </div>
-
-          <input type="submit" value="Cotizar">
-
-        </form>
-      </div>
     </h1>
+    <div class="contenido">
+      <Alerta v-if="error">{{ error }}</Alerta>
+      <form class="formulario" action="" @submit.prevent="cotizarCripto">
+        <div class="campo">
+          <label for="moneda">Moneda:</label>
+          <select name="" id="moneda" v-model="cotizar.moneda">
+            <option value="">--Selecciona--</option>
+            <option v-for="moneda in monedas" :value="moneda.codigo">{{ moneda.texto }}</option>
+          </select>
+        </div>
+
+        <div class="campo">
+          <label for="crypto">Criptomonedas:</label>
+          <select name="" id="crypto" v-model="cotizar.criptomoneda">
+            <option value="">--Selecciona--</option>
+            <option v-for="crypto in criptomonedas" :value="crypto.CoinInfo.Name">{{ crypto.CoinInfo.FullName }}
+            </option>
+          </select>
+        </div>
+
+        <input type="submit" value="Cotizar">
+
+      </form>
+
+      <div class="contenedor-resultado">
+        <h2>
+          Cotización
+        </h2>
+        <div class="resultado">
+          <img :src="'https://cryptocompare.com/' + cotizacion.IMAGEURL" alt="imagen cripto">
+          <div>
+            <p>El precio es de: <span>{{ cotizacion.PRICE }} </span></p>
+            <p> Precio más alto del dia: <span>{{ cotizacion.HIGHDAY }}</span></p>
+            <p> Precio más bajo de hoy dia: <span>{{ cotizacion.LOWDAY }}</span></p>
+            <p> Variación últimas 24hrs: <span>{{ cotizacion.CHANGEPCT24HOUR }}%</span></p>
+            <p> Última actualización: <span>{{ cotizacion.LASTUPDATE }}</span></p>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
-
-<style scoped></style>
