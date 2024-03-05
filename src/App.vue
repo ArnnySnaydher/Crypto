@@ -1,7 +1,7 @@
 <script setup>
 import Alerta from './Alerta.vue';
 
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive , computed} from 'vue';
 
 const error = ref('')
 
@@ -51,6 +51,10 @@ const obtenerCotizacion = async () => {
 
   }
 }
+const mostrarResultado = computed(()=>{
+  return Object.values(cotizacion.value).length > 0
+})
+
 
 </script>
 
@@ -83,11 +87,11 @@ const obtenerCotizacion = async () => {
 
       </form>
 
-      <div class="contenedor-resultado">
+      <div class="contenedor-resultado" v-if="mostrarResultado">
         <h2>
           Cotización
         </h2>
-        <div class="resultado">
+        <div class="resultado" >
           <img :src="'https://cryptocompare.com/' + cotizacion.IMAGEURL" alt="imagen cripto">
           <div>
             <p>El precio es de: <span>{{ cotizacion.PRICE }} </span></p>
