@@ -1,8 +1,13 @@
 <script setup>
 import Alerta from './components/Alerta.vue';
 import Spinner from './components/Spinner.vue';
+import useCripto from './composables/useCripto';
 
 import { ref, onMounted, reactive, computed } from 'vue';
+
+
+const {cotizarMoneda} = useCripto()
+cotizarMoneda()
 
 const error = ref('')
 
