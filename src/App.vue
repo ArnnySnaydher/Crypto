@@ -1,7 +1,8 @@
 <script setup>
-import Alerta from './Alerta.vue';
+import Alerta from './components/Alerta.vue';
+import Spinner from './components/Spinner.vue';
 
-import { ref, onMounted, reactive , computed} from 'vue';
+import { ref, onMounted, reactive, computed } from 'vue';
 
 const error = ref('')
 
@@ -10,6 +11,7 @@ const monedas = ref([
   { codigo: 'MXN', texto: 'Peso Mexicano' },
   { codigo: 'EUR', texto: 'Euro' },
   { codigo: 'GBP', texto: 'Libra Esterlina' },
+  { codigo: 'SOL', texto: 'Soles Peruanos' },
 ])
 
 const criptomonedas = ref([])
@@ -19,6 +21,7 @@ const cotizar = reactive({
 })
 
 const cotizacion = ref({})
+const cargando = ref(false)
 
 onMounted(() => {
   const url = 'https://min-api.cryptocompare.com/data/top/mktcapfull?limit=20&tsym=USD'
@@ -40,18 +43,24 @@ const cotizarCripto = () => {
 }
 
 const obtenerCotizacion = async () => {
+  cargando.value = true
+  cotizacion.value = {}
   try {
+
     const { moneda, criptomoneda } = cotizar
     const url = `https://min-api.cryptocompare.com/data/pricemultifull?fsyms=${criptomoneda}&tsyms=${moneda}`
 
     const respuesta = await fetch(url)
     const data = await respuesta.json()
     cotizacion.value = data.DISPLAY[criptomoneda][moneda]
-  } catch (error) {
 
+  } catch (error) {
+    error.value = 'ERROR al realizar la petición'
+  } finally {
+    cargando.value = false
   }
 }
-const mostrarResultado = computed(()=>{
+const mostrarResultado = computed(() => {
   return Object.values(cotizacion.value).length > 0
 })
 
@@ -86,12 +95,13 @@ const mostrarResultado = computed(()=>{
         <input type="submit" value="Cotizar">
 
       </form>
+      <Spinner v-if="cargando"></Spinner>
 
       <div class="contenedor-resultado" v-if="mostrarResultado">
         <h2>
           Cotización
         </h2>
-        <div class="resultado" >
+        <div class="resultado">
           <img :src="'https://cryptocompare.com/' + cotizacion.IMAGEURL" alt="imagen cripto">
           <div>
             <p>El precio es de: <span>{{ cotizacion.PRICE }} </span></p>
@@ -106,4 +116,4 @@ const mostrarResultado = computed(()=>{
     </div>
 
   </div>
-</template>
+</template>./components/Alerta.vue
